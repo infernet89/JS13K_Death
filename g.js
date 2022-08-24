@@ -8,7 +8,9 @@ var ctx;
 var dragging=false;
 var mousex=-100;
 var mousey=-100;
-
+var drawable=[];
+var start;
+var end;
 //setup
 canvas = document.getElementById("g");
 ctx = canvas.getContext("2d");
@@ -20,8 +22,57 @@ canvas.addEventListener("mousemove",mossoMouse);
 canvas.addEventListener("mousedown",cliccatoMouse);
 canvas.addEventListener("mouseup",rilasciatoMouse);
 
+setup();
 setInterval(run, 33);
 
+//setup all the objects
+function setup()
+{
+    start=new Object()
+    start.type="start";
+    start.x=canvasW-200;
+    start.y=canvasH-100;
+    start.width=200;
+    start.height=100;
+    start.bgcolor="#666";
+    start.color="#FFF";
+    drawable.push(start);
+
+    end=new Object()
+    end.type="end";
+    end.x=50;
+    end.y=50;
+    end.width=125;
+    end.height=125;
+    end.bgcolor="#003a00";
+    end.color="#FFF";
+    end.disabled=true;
+    drawable.push(end);
+
+    /*var tmp=new Object();
+    tmp.type="circle";
+    tmp.x=200;
+    tmp.y=200;
+    tmp.radius=50;
+    tmp.bgcolor="#0F0";
+    tmp.color="#F00";
+    drawable.push(tmp);*/
+}
+//check if mouse is inside obj
+function isSelected(obj)
+{
+    //circle-based
+    if(obj.radius>0 && distanceFrom(mousex,mousey,obj.x,obj.y) < obj.radius)
+        return true;
+    else if(obj.radius>0)
+        return false;
+    //rectangle-based
+    if(mousex < obj.x) return false;
+    if(mousex > obj.x + obj.width) return false;
+    if(mousey < obj.y) return false;
+    if(mousey > obj.y + obj.height) return false;
+    return true;
+}
 //draw a single object
 function draw(obj)
 {
@@ -45,13 +96,29 @@ function draw(obj)
     }
     if(obj.type=="start")
     {
+        ctx.fillStyle=obj.bgcolor;
+        ctx.fillRect(obj.x,obj.y,obj.width,obj.height);
+        ctx.fillStyle=obj.color;
         ctx.font = "150px sans-serif";
         ctx.fillText("🗺",obj.x,obj.y+100);
     }
     if(obj.type=="end")
     {
+        ctx.fillStyle=obj.bgcolor;
+        ctx.fillRect(obj.x,obj.y,obj.width,obj.height);
+        ctx.fillStyle=obj.color;
         ctx.font = "100px sans-serif";
         ctx.fillText("🏁",obj.x,obj.y+100);
+    }
+    if(obj.type=="circle")
+    {
+        ctx.fillStyle=obj.bgcolor;
+        ctx.beginPath();
+        ctx.arc(obj.x, obj.y, obj.radius, 0, 2 * Math.PI);
+        ctx.fill(); 
+        ctx.lineWidth = 2;
+        ctx.strokeStyle=obj.color;
+        ctx.stroke();
     }
     ctx.globalAlpha=1;
 }
@@ -68,25 +135,14 @@ function run()
     ctx.fillRect(0,0,1,canvasH);
     ctx.fillRect(canvasW-1,0,1,canvasH);
 
-    var start=new Object()
-    start.type="start";
-    start.x=canvasW-200;
-    start.y=canvasH-100;
-    draw(start)
-    var end=new Object()
-    end.type="end";
-    end.x=50;
-    end.y=50;
-    end.disabled=true;
-    draw(end);
+    drawable.forEach(el => draw(el));
+    drawable.forEach(el => { el.selected=isSelected(el); });
 
-    //DEBUG
-    var tmp=new Object()
-    tmp.type="end";
-    tmp.x=50;
-    tmp.y=50;
-    tmp.disabled=true;
-    draw(tmp);
+    if(start.selected)
+    {
+        canvas.style.cursor = "pointer";
+    }
+    else canvas.style.cursor = "default";
 }
 /*#############
     Funzioni Utili
