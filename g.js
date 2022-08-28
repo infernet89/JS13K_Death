@@ -8,9 +8,19 @@ var ctx;
 var dragging=false;
 var mousex=-100;
 var mousey=-100;
+var oldmousex,oldmousey;
+var level=0;
 var drawable=[];
 var start;
 var end;
+var playMode=false;
+var timeLeft=0;
+var trail=[];
+
+//TODO DEBUG
+level=1;
+//TODO DEBUG
+
 //setup
 canvas = document.getElementById("g");
 ctx = canvas.getContext("2d");
@@ -28,6 +38,8 @@ setInterval(run, 33);
 //setup all the objects
 function setup()
 {
+    drawable=[];
+
     start=new Object()
     start.type="start";
     start.x=canvasW-200;
@@ -48,6 +60,25 @@ function setup()
     end.color="#FFF";
     end.disabled=true;
     drawable.push(end);
+
+    if(level==1)
+    {
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=2;
+        tmp.y=250;
+        tmp.width=900;
+        tmp.height=50;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=600;
+        tmp.y=550;
+        tmp.width=canvasW-tmp.x-2;
+        tmp.height=50;
+        drawable.push(tmp);
+    }
 
     /*var tmp=new Object();
     tmp.type="circle";
@@ -120,6 +151,15 @@ function draw(obj)
         ctx.strokeStyle=obj.color;
         ctx.stroke();
     }
+    if(obj.type=="obstacle")
+    {
+        const gradient = ctx.createLinearGradient(obj.x,obj.y,obj.x+obj.width,obj.y+obj.height);
+        gradient.addColorStop(0, '#e63300');
+        gradient.addColorStop(.5, '#770000');
+        gradient.addColorStop(1, '#e63300');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(obj.x,obj.y,obj.width,obj.height);
+    }
     ctx.globalAlpha=1;
 }
 //main loop that draw the screen
@@ -138,11 +178,117 @@ function run()
     drawable.forEach(el => draw(el));
     drawable.forEach(el => { el.selected=isSelected(el); });
 
-    if(start.selected)
+    if(!playMode)
     {
-        canvas.style.cursor = "pointer";
+        if(start.selected)
+        {
+            canvas.style.cursor = "pointer";
+            if(dragging)
+            {
+                playMode=true;
+                start.disabled=true;
+                end.disabled=false;
+                canvas.style.cursor = "default";
+                timeLeft=726;
+            }
+        }
+        else canvas.style.cursor = "default";
     }
-    else canvas.style.cursor = "default";
+    //we are playing
+    else
+    {
+        //TODO
+        ctx.fillStyle="#FFF";
+        ctx.font = "10px sans-serif";
+        ctx.fillText((timeLeft/10)+" years",mousex,mousey);
+        timeLeft-=3;
+        if(timeLeft <=0 || checkCollisions())
+        {
+            playMode=false;
+            start.disabled=false;
+            end.disabled=true;
+            trail=[];
+        }
+        else
+        {
+            trail.push(mousex+"_"+mousey+"_"+dragging);
+            drawTrail();
+        }
+    }
+    oldmousex=mousex;
+    oldmousey=mousey;
+}
+function drawTrail()
+{
+    if(trail.length<2) return;
+    ctx.strokeStyle = "#010";
+    var oldx=trail[0].split("_")[0];
+    var oldy=trail[0].split("_")[1];
+    for(var i=0;i<trail.length;i++)
+    {
+        var x=trail[i].split("_")[0];
+        var y=trail[i].split("_")[1];
+        ctx.beginPath();
+        ctx.moveTo(oldx, oldy);
+        ctx.lineTo(x, y);
+        ctx.stroke(); 
+        oldx=x;
+        oldy=y;
+    }
+}
+//return true if it has collided with something (obstacle)
+function checkCollisions()
+{
+    var res=false;
+    if(mousex<0) return true;
+    if(mousex>canvasW) return true;
+    if(mousey<0) return true;
+    if(mousey>canvasH) return true;
+    //check obstacles
+    drawable.forEach(el => { 
+        if(el.type=="obstacle")
+        {
+            //mouse over
+            if(isSelected(el))
+                res=true;
+            //passed by
+            else if(lineRect(oldmousex,oldmousey,mousex,mousey,el.x,el.y,el.width,el.height))
+                res=true;
+            else console.log("False!");
+        } 
+    });
+    return res;
+}
+//check if a line intersect a rectangle
+function lineRect(x1,y1,x2,y2,rx,ry,rw,rh)
+{
+    console.log("Checking ",x1+","+y1,x2+","+y2,"on rectangle",rx+","+ry,rw,rh);
+    // check if the line has hit any of the rectangle's sides
+    // uses the Line/Line function below
+    var left =   lineLine(x1,y1,x2,y2, rx,ry,rx, ry+rh);
+    var right =  lineLine(x1,y1,x2,y2, rx+rw,ry, rx+rw,ry+rh);
+    var top =    lineLine(x1,y1,x2,y2, rx,ry, rx+rw,ry);
+    var bottom = lineLine(x1,y1,x2,y2, rx,ry+rh, rx+rw,ry+rh);
+
+    // if ANY of the above are true, the line
+    // has hit the rectangle
+    if (left || right || top || bottom) {
+        return true;
+    }
+    return false;
+}
+//check if two lines intersect
+function lineLine(x1, y1, x2, y2, x3, y3, x4, y4)
+{
+  // calculate the direction of the lines
+  var uA = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+  var uB = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+
+  // if uA and uB are between 0-1, lines are colliding
+  if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
+    return true;
+  }
+  return false;
 }
 /*#############
     Funzioni Utili
