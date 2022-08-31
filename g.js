@@ -16,9 +16,10 @@ var end;
 var playMode=false;
 var timeLeft=0;
 var trail=[];
+var agingSpeed=3;
 
 //TODO DEBUG
-level=1;
+level=2;
 //TODO DEBUG
 
 //setup
@@ -35,10 +36,26 @@ canvas.addEventListener("mouseup",rilasciatoMouse);
 setup();
 setInterval(run, 33);
 
+//win the level
+function win()
+{
+    document.title="You won!";
+    playMode=false;
+    level++;
+    setup();
+}
+function fail()
+{
+    playMode=false;
+    start.disabled=false;
+    end.disabled=true;
+    setup();
+}
 //setup all the objects
 function setup()
 {
     drawable=[];
+    trail=[];
 
     start=new Object()
     start.type="start";
@@ -69,6 +86,9 @@ function setup()
         tmp.y=250;
         tmp.width=900;
         tmp.height=50;
+        tmp.color1="#e63300"
+        tmp.color2="#770000"
+        tmp.color3="#e63300"
         drawable.push(tmp);
 
         var tmp=new Object();
@@ -77,6 +97,57 @@ function setup()
         tmp.y=550;
         tmp.width=canvasW-tmp.x-2;
         tmp.height=50;
+        tmp.color1="#e63300"
+        tmp.color2="#770000"
+        tmp.color3="#e63300"
+        drawable.push(tmp);
+    }
+    else if(level==2)
+    {
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=2;
+        tmp.y=250;
+        tmp.width=canvasW-tmp.x-2;
+        tmp.height=50;
+        tmp.color1="#a18700"
+        tmp.color2="#ffdc2b"
+        tmp.color3="#a18700"
+        tmp.key="yellow";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hover"
+        tmp.x=canvasW-200;
+        tmp.y=350;
+        tmp.radius=30;
+        tmp.color1="#ffdc2b"
+        tmp.color2="#a18700"
+        tmp.key="yellow";
+        tmp.missingTime=100;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=2;
+        tmp.y=450;
+        tmp.width=canvasW-tmp.x-2;
+        tmp.height=50;
+        tmp.color1="#088300"
+        tmp.color2="#37ff2b"
+        tmp.color3="#088300"
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_click"
+        tmp.x=100;
+        tmp.y=550;
+        tmp.radius=30;
+        tmp.color1="#37ff2b"
+        tmp.color2="#088300"
+        tmp.key="green";
+        tmp.missingClick=10;
         drawable.push(tmp);
     }
 
@@ -151,12 +222,86 @@ function draw(obj)
         ctx.strokeStyle=obj.color;
         ctx.stroke();
     }
+    if(obj.type=="button_click")
+    {
+        ctx.fillStyle=obj.color2;
+        ctx.beginPath();
+        ctx.arc(obj.x, obj.y, obj.radius, 0, 2 * Math.PI);
+        ctx.fill(); 
+        ctx.lineWidth = 2;
+        ctx.strokeStyle="#000";
+        ctx.stroke();
+        //inner circle
+        if(obj.clicked)
+            ctx.fillStyle=obj.color2;
+        else    
+            ctx.fillStyle=obj.color1;
+        ctx.beginPath();
+        ctx.arc(obj.x, obj.y, obj.radius*0.8, 0, 2 * Math.PI);
+        ctx.fill(); 
+        ctx.lineWidth = 2;
+        ctx.strokeStyle="#000";
+        ctx.stroke();
+        //text
+        if(obj.missingClick>0)
+        {
+            ctx.fillStyle="#000";
+            ctx.font = "18px sans-serif";
+            ctx.fillText(obj.missingClick,obj.x-10,obj.y+5);
+        }        
+    }
+    if(obj.type=="button_hover")
+    {
+        //bug on Firefox: https://stackoverflow.com/questions/58807793/firefox-canvas-with-radial-gradient-and-globalalpha-0-1-not-working-on-two-machi
+        if(obj.disabled)
+        {
+            ctx.fillStyle = obj.color1;
+        }
+        else
+        {
+            const gradient = ctx.createRadialGradient(obj.x, obj.y, obj.radius*0.5, obj.x, obj.y, obj.radius);
+            if(obj.selected)
+                gradient.addColorStop(0, obj.color2);
+            else
+                gradient.addColorStop(0, obj.color1);
+            gradient.addColorStop(1, obj.color2);
+            ctx.fillStyle = gradient;
+        }
+        
+        ctx.beginPath();
+        ctx.arc(obj.x, obj.y, obj.radius, 0, 2 * Math.PI);
+        ctx.fill(); 
+        ctx.lineWidth = 2;
+        ctx.strokeStyle="#000";
+        ctx.stroke();
+        //clock markers
+        for (var i = 0; i < 12; i++) {
+            angle = (i - 3) * (Math.PI * 2) / 12;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            var x1 = obj.x + Math.cos(angle) * (obj.radius*0.7);
+            var y1 = obj.y + Math.sin(angle) * (obj.radius*0.8);
+            var x2 = obj.x + Math.cos(angle) * (obj.radius);
+            var y2 = obj.y + Math.sin(angle) * (obj.radius);
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = '#000';
+            ctx.stroke();
+        }
+        //text
+        if(obj.missingTime>0)
+        {
+            ctx.fillStyle="#000";
+            ctx.font = "18px sans-serif";
+            ctx.fillText((obj.missingTime/10).toFixed(1),obj.x-15,obj.y+5);
+        }        
+    }
     if(obj.type=="obstacle")
     {
         const gradient = ctx.createLinearGradient(obj.x,obj.y,obj.x+obj.width,obj.y+obj.height);
-        gradient.addColorStop(0, '#e63300');
-        gradient.addColorStop(.5, '#770000');
-        gradient.addColorStop(1, '#e63300');
+        gradient.addColorStop(0, obj.color1);
+        gradient.addColorStop(.5, obj.color2);
+        gradient.addColorStop(1, obj.color3);
         ctx.fillStyle = gradient;
         ctx.fillRect(obj.x,obj.y,obj.width,obj.height);
     }
@@ -197,17 +342,23 @@ function run()
     //we are playing
     else
     {
-        //TODO
+        if(end.selected)
+        {
+            canvas.style.cursor = "pointer";
+            if(dragging)
+                win();
+        }
+        else
+        {
+            canvas.style.cursor = "default";
+        }
         ctx.fillStyle="#FFF";
         ctx.font = "10px sans-serif";
         ctx.fillText((timeLeft/10)+" years",mousex,mousey);
-        timeLeft-=3;
+        timeLeft-=agingSpeed;
         if(timeLeft <=0 || checkCollisions())
         {
-            playMode=false;
-            start.disabled=false;
-            end.disabled=true;
-            trail=[];
+            fail();
         }
         else
         {
@@ -246,7 +397,8 @@ function checkCollisions()
     if(mousey>canvasH) return true;
     //check obstacles
     drawable.forEach(el => { 
-        if(el.type=="obstacle")
+        //obstacles
+        if(el.type=="obstacle" && !el.disabled)
         {
             //mouse over
             if(isSelected(el))
@@ -254,15 +406,66 @@ function checkCollisions()
             //passed by
             else if(lineRect(oldmousex,oldmousey,mousex,mousey,el.x,el.y,el.width,el.height))
                 res=true;
-            else console.log("False!");
+        } 
+        //buttons
+        if(el.type=="button_click" && !el.disabled)
+        {
+            if(isSelected(el))
+            {
+                if(!el.clicked && dragging)
+                {
+                    clickButton(el);
+                }
+                else if(el.clicked && !dragging)
+                {
+                    el.clicked=false;
+                }
+            }
+            else el.clicked=false;
+        }
+        if(el.type=="button_hover" && !el.disabled)
+        {
+            if(isSelected(el))
+            {
+                hoverButton(el);
+            }
         } 
     });
     return res;
 }
+function clickButton(obj)
+{
+    obj.missingClick--;
+    obj.clicked=true;
+    if(obj.missingClick<=0)
+    {
+        obj.disabled=true;
+        drawable.forEach(el => { 
+            if(el.type=="obstacle" && !el.disabled && el.key==obj.key)
+            {
+                el.disabled=true;
+            } 
+        });
+    }
+}
+function hoverButton(obj)
+{
+    obj.missingTime-=agingSpeed;
+    if(obj.missingTime<=0)
+    {
+        obj.disabled=true;
+        drawable.forEach(el => { 
+            if(el.type=="obstacle" && !el.disabled && el.key==obj.key)
+            {
+                el.disabled=true;
+            } 
+        });
+    }
+}
 //check if a line intersect a rectangle
 function lineRect(x1,y1,x2,y2,rx,ry,rw,rh)
 {
-    console.log("Checking ",x1+","+y1,x2+","+y2,"on rectangle",rx+","+ry,rw,rh);
+    //console.log("Checking ",x1+","+y1,x2+","+y2,"on rectangle",rx+","+ry,rw,rh);
     // check if the line has hit any of the rectangle's sides
     // uses the Line/Line function below
     var left =   lineLine(x1,y1,x2,y2, rx,ry,rx, ry+rh);
