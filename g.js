@@ -19,7 +19,7 @@ var trail=[];
 var agingSpeed=3;
 
 //TODO DEBUG
-level=2;
+level=3;
 //TODO DEBUG
 
 //setup
@@ -148,6 +148,51 @@ function setup()
         tmp.color2="#088300"
         tmp.key="green";
         tmp.missingClick=10;
+        drawable.push(tmp);
+    }
+    else if(level==3)
+    {
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=1000;
+        tmp.y=2;
+        tmp.width=50;
+        tmp.height=600;
+        tmp.color1="#e63300";
+        tmp.color2="#770000";
+        tmp.color3="#e63300";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=2;
+        tmp.y=250;
+        tmp.width=1000-2;
+        tmp.height=50;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000883";
+        tmp.color3="#0e1cff";
+        tmp.key="blue";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hold";
+        tmp.x=canvasW-100;
+        tmp.y=100;
+        tmp.radius=30;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000";
+        tmp.key="blue";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hold";
+        tmp.x=850;
+        tmp.y=100;
+        tmp.radius=30;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000";
+        tmp.key="blue";
         drawable.push(tmp);
     }
 
@@ -296,6 +341,49 @@ function draw(obj)
             ctx.fillText((obj.missingTime/10).toFixed(1),obj.x-15,obj.y+5);
         }        
     }
+    if(obj.type=="button_hold")
+    {
+        //bug on Firefox: https://stackoverflow.com/questions/58807793/firefox-canvas-with-radial-gradient-and-globalalpha-0-1-not-working-on-two-machi
+        if(obj.disabled)
+        {
+            ctx.fillStyle = obj.color1;
+        }
+        else
+        {
+            const gradient = ctx.createRadialGradient(obj.x, obj.y, obj.radius*0.1, obj.x, obj.y, obj.radius);
+            if(obj.selected)
+                gradient.addColorStop(0, obj.color2);
+            else
+            {
+                gradient.addColorStop(0, obj.color1);
+                gradient.addColorStop(0.1, obj.color2);
+                gradient.addColorStop(0.2, obj.color1);
+                gradient.addColorStop(0.3, obj.color2);
+                gradient.addColorStop(0.4, obj.color1);
+                gradient.addColorStop(0.5, obj.color2);
+                gradient.addColorStop(0.6, obj.color1);
+                gradient.addColorStop(0.7, obj.color2);
+                gradient.addColorStop(0.8, obj.color1);
+                gradient.addColorStop(0.9, obj.color2);
+            }                
+            gradient.addColorStop(1, obj.color1);
+            ctx.fillStyle = gradient;
+        }
+        
+        ctx.beginPath();
+        ctx.arc(obj.x, obj.y, obj.radius, 0, 2 * Math.PI);
+        ctx.fill(); 
+        ctx.lineWidth = 2;
+        ctx.strokeStyle="#000";
+        ctx.stroke();
+        //text
+        if(obj.missingTime>0)
+        {
+            ctx.fillStyle="#000";
+            ctx.font = "18px sans-serif";
+            ctx.fillText((obj.missingTime/10).toFixed(1),obj.x-15,obj.y+5);
+        }        
+    }
     if(obj.type=="obstacle")
     {
         const gradient = ctx.createLinearGradient(obj.x,obj.y,obj.x+obj.width,obj.y+obj.height);
@@ -429,7 +517,18 @@ function checkCollisions()
             {
                 hoverButton(el);
             }
-        } 
+        }
+        if(el.type=="button_hold" && !el.disabled)
+        {
+            if(!el.holding && isSelected(el))
+            {
+                holdButton(el);
+            }
+            else if(el.holding && !isSelected(el))
+            {
+                releaseButton(el);
+            }                
+        }
     });
     return res;
 }
@@ -461,6 +560,26 @@ function hoverButton(obj)
             } 
         });
     }
+}
+function holdButton(obj)
+{
+    obj.holding=true;
+    drawable.forEach(el => { 
+        if(el.type=="obstacle" && !el.disabled && el.key==obj.key)
+        {
+            el.disabled=true;
+        } 
+    });
+}
+function releaseButton(obj)
+{
+    obj.holding=false;
+    drawable.forEach(el => { 
+        if(el.type=="obstacle" && el.disabled && el.key==obj.key)
+        {
+            el.disabled=false;
+        } 
+    });
 }
 //check if a line intersect a rectangle
 function lineRect(x1,y1,x2,y2,rx,ry,rw,rh)
