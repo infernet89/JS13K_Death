@@ -12,11 +12,14 @@ var oldmousex,oldmousey;
 var level=0;
 var drawable=[];
 var start;
+var startCountries=[];
 var end;
 var playMode=false;
 var timeLeft=0;
 var trail=[];
 var agingSpeed=3;
+var activeCountry=start;
+var startTime;
 
 //TODO DEBUG
 level=3;
@@ -49,11 +52,16 @@ function fail()
     playMode=false;
     start.disabled=false;
     end.disabled=true;
+    if(activeCountry)
+    {
+        activeCountry.trail=[...trail];
+    }        
     setup();
 }
 //setup all the objects
 function setup()
 {
+    activeCountry=null;
     drawable=[];
     trail=[];
 
@@ -152,6 +160,150 @@ function setup()
     }
     else if(level==3)
     {
+        if(startCountries.length==0)
+        {
+            var tmp=new Object();
+            tmp.label="USA";
+            tmp.age=79;
+            tmp.type="country";
+            startCountries.push(tmp);
+
+            var tmp=new Object();
+            tmp.label="EUROPE";
+            tmp.age=80;
+            tmp.type="country";
+            startCountries.push(tmp);
+        }
+        else
+        {
+            startCountries.forEach(el => { el.disabled=false; });
+        }
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=2;
+        tmp.y=500;
+        tmp.width=canvasW-tmp.x-2;
+        tmp.height=50;
+        tmp.color1="#a18700"
+        tmp.color2="#ffdc2b"
+        tmp.color3="#a18700"
+        tmp.key="yellow";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hover"
+        tmp.x=1000;
+        tmp.y=620;
+        tmp.radius=30;
+        tmp.color1="#ffdc2b"
+        tmp.color2="#a18700"
+        tmp.key="yellow";
+        tmp.missingTime=55;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hover"
+        tmp.x=800;
+        tmp.y=620;
+        tmp.radius=30;
+        tmp.color1="#ffdc2b"
+        tmp.color2="#a18700"
+        tmp.key="yellow";
+        tmp.missingTime=55;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hover"
+        tmp.x=600;
+        tmp.y=620;
+        tmp.radius=30;
+        tmp.color1="#ffdc2b"
+        tmp.color2="#a18700"
+        tmp.key="yellow";
+        tmp.missingTime=55;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hover"
+        tmp.x=400;
+        tmp.y=620;
+        tmp.radius=30;
+        tmp.color1="#ffdc2b"
+        tmp.color2="#a18700"
+        tmp.key="yellow";
+        tmp.missingTime=55;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hover"
+        tmp.x=200;
+        tmp.y=620;
+        tmp.radius=30;
+        tmp.color1="#ffdc2b"
+        tmp.color2="#a18700"
+        tmp.key="yellow";
+        tmp.missingTime=55;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=2;
+        tmp.y=250;
+        tmp.width=canvasW-tmp.x-2;
+        tmp.height=50;
+        tmp.color1="#088300"
+        tmp.color2="#37ff2b"
+        tmp.color3="#088300"
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_click"
+        tmp.x=300;
+        tmp.y=370;
+        tmp.radius=30;
+        tmp.color1="#37ff2b"
+        tmp.color2="#088300"
+        tmp.key="green";
+        tmp.missingClick=5;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_click"
+        tmp.x=500;
+        tmp.y=370;
+        tmp.radius=30;
+        tmp.color1="#37ff2b"
+        tmp.color2="#088300"
+        tmp.key="green";
+        tmp.missingClick=5;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_click"
+        tmp.x=700;
+        tmp.y=370;
+        tmp.radius=30;
+        tmp.color1="#37ff2b"
+        tmp.color2="#088300"
+        tmp.key="green";
+        tmp.missingClick=5;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_click"
+        tmp.x=900;
+        tmp.y=370;
+        tmp.radius=30;
+        tmp.color1="#37ff2b"
+        tmp.color2="#088300"
+        tmp.key="green";
+        tmp.missingClick=5;
+        drawable.push(tmp);
+    }
+    else if(level==4)
+    {
         var tmp=new Object();
         tmp.type="obstacle";
         tmp.x=1000;
@@ -196,14 +348,35 @@ function setup()
         drawable.push(tmp);
     }
 
-    /*var tmp=new Object();
-    tmp.type="circle";
-    tmp.x=200;
-    tmp.y=200;
-    tmp.radius=50;
-    tmp.bgcolor="#0F0";
-    tmp.color="#F00";
-    drawable.push(tmp);*/
+    //calculate countries properties
+    for(i=0;i<startCountries.length;i++)
+    {
+        var el=startCountries[i];
+        el.x=start.x+3+100*Math.floor(i/3);
+        el.y=start.y+3+(i%3)*30;
+        el.width=4+10*el.label.length;
+        el.height=24;
+        drawable.push(el);
+    }
+}
+function clickedStart(obj)
+{
+    playMode=true;
+    start.disabled=true;
+    end.disabled=false;
+    canvas.style.cursor = "default";
+    if(!obj || obj==start)
+    {
+        timeLeft=726;
+    }
+    else
+    {
+        startCountries.forEach(el => { el.disabled=(el!=obj); });
+        timeLeft=obj.age*10;
+        obj.trail=[];
+        activeCountry=obj;
+    }
+    startTime=Date.now();
 }
 //check if mouse is inside obj
 function isSelected(obj)
@@ -223,23 +396,18 @@ function isSelected(obj)
 //draw a single object
 function draw(obj)
 {
+    ctx.save();
+
     ctx.fillStyle=obj.color;
     if(obj.disabled)
         ctx.globalAlpha=0.2;
     if(obj.type=="cursor")
     {
         ctx.strokeStyle = "#000";
-        ctx.beginPath();
-        ctx.moveTo(obj.x, obj.y);
-        ctx.lineTo(obj.x, obj.y+17);
-        ctx.lineTo(obj.x+4, obj.y+15);
-        ctx.lineTo(obj.x+6, obj.y+20);
-        ctx.lineTo(obj.x+8, obj.y+20);
-        ctx.lineTo(obj.x+6, obj.y+15);
-        ctx.lineTo(obj.x+10, obj.y+13);
-        ctx.closePath();
-        ctx.stroke();
-        ctx.fill();
+        ctx.fillStyle = "#FFF";
+        var cursor=new Path2D("M"+obj.x+" "+obj.y+" l 0 17 l 4 -2 l 2 5 l 2 0 l -2 -5 l 4 -2 Z");
+        ctx.stroke(cursor);
+        ctx.fill(cursor);        
     }
     if(obj.type=="start")
     {
@@ -248,6 +416,25 @@ function draw(obj)
         ctx.fillStyle=obj.color;
         ctx.font = "150px sans-serif";
         ctx.fillText("🗺",obj.x,obj.y+100);
+    }
+    if(obj.type=="country")
+    {
+        if(obj.selected)
+        {
+            ctx.font = "16px monospace";
+            ctx.fillStyle="#999";
+        }
+        else
+        {
+            ctx.font = "15px monospace";
+            ctx.fillStyle="#000";
+        }
+        
+        ctx.fillRect(obj.x,obj.y,obj.width,obj.height);
+        ctx.fillStyle="#FFF";
+        ctx.fillRect(obj.x+2,obj.y+2,obj.width-4,obj.height-4);
+        ctx.fillStyle="#000";
+        ctx.fillText(obj.label,obj.x+5,obj.y+16);
     }
     if(obj.type=="end")
     {
@@ -292,7 +479,7 @@ function draw(obj)
         {
             ctx.fillStyle="#000";
             ctx.font = "18px sans-serif";
-            ctx.fillText(obj.missingClick,obj.x-10,obj.y+5);
+            ctx.fillText(obj.missingClick,obj.x-5,obj.y+5);
         }        
     }
     if(obj.type=="button_hover")
@@ -393,7 +580,7 @@ function draw(obj)
         ctx.fillStyle = gradient;
         ctx.fillRect(obj.x,obj.y,obj.width,obj.height);
     }
-    ctx.globalAlpha=1;
+    ctx.restore();
 }
 //main loop that draw the screen
 function run()
@@ -415,15 +602,28 @@ function run()
     {
         if(start.selected)
         {
-            canvas.style.cursor = "pointer";
-            if(dragging)
+            if(startCountries.length>0)
             {
-                playMode=true;
-                start.disabled=true;
-                end.disabled=false;
                 canvas.style.cursor = "default";
-                timeLeft=726;
+                startCountries.forEach(el => {
+                    if(el.selected)
+                    {
+                        canvas.style.cursor = "pointer";
+                        if(dragging)
+                        {
+                            clickedStart(el);
+                        }
+                    }
+                });
             }
+            else
+            {
+                canvas.style.cursor = "pointer";
+                if(dragging)
+                {
+                    clickedStart();
+                }
+            }            
         }
         else canvas.style.cursor = "default";
     }
@@ -450,29 +650,49 @@ function run()
         }
         else
         {
-            trail.push(mousex+"_"+mousey+"_"+dragging);
-            drawTrail();
+            var tick=Date.now()-startTime;
+            trail.push(mousex+"_"+mousey+"_"+dragging+"_"+tick);
+            drawTrail(trail);
+            startCountries.forEach(el => { 
+                if(el.trail && el.trail.length>0)
+                {
+                    drawTrail(el.trail,tick);
+                }
+                                 
+            });
         }
     }
     oldmousex=mousex;
     oldmousey=mousey;
 }
-function drawTrail()
+function drawTrail(obj,limit=9999999)
 {
-    if(trail.length<2) return;
+    if(obj.length<4) return;
     ctx.strokeStyle = "#010";
-    var oldx=trail[0].split("_")[0];
-    var oldy=trail[0].split("_")[1];
-    for(var i=0;i<trail.length;i++)
+    var oldx=obj[0].split("_")[0];
+    var oldy=obj[0].split("_")[1];
+    for(var i=0;i<obj.length;i++)
     {
-        var x=trail[i].split("_")[0];
-        var y=trail[i].split("_")[1];
+        var x=obj[i].split("_")[0];
+        var y=obj[i].split("_")[1];
+        var drag=obj[i].split("_")[2];
+        var tick=obj[i].split("_")[3];
+        if(tick>limit) break;
         ctx.beginPath();
         ctx.moveTo(oldx, oldy);
         ctx.lineTo(x, y);
         ctx.stroke(); 
+        ctx.closePath();
         oldx=x;
         oldy=y;
+    }
+    if(limit<9999999)
+    {
+        var tmp=new Object();
+        tmp.type="cursor";
+        tmp.x=oldx;
+        tmp.y=oldy;
+        draw(tmp);
     }
 }
 //return true if it has collided with something (obstacle)
@@ -539,12 +759,22 @@ function clickButton(obj)
     if(obj.missingClick<=0)
     {
         obj.disabled=true;
+        var allDone=true;
         drawable.forEach(el => { 
-            if(el.type=="obstacle" && !el.disabled && el.key==obj.key)
+            if(el.type.startsWith("button_") && !el.disabled && el.key==obj.key)
             {
-                el.disabled=true;
-            } 
+                allDone=false;
+            }
         });
+        if(allDone)
+        {
+            drawable.forEach(el => { 
+                if(el.type=="obstacle" && !el.disabled && el.key==obj.key)
+                {
+                    el.disabled=true;
+                } 
+            });
+        }
     }
 }
 function hoverButton(obj)
@@ -553,12 +783,22 @@ function hoverButton(obj)
     if(obj.missingTime<=0)
     {
         obj.disabled=true;
+        var allDone=true;
         drawable.forEach(el => { 
-            if(el.type=="obstacle" && !el.disabled && el.key==obj.key)
+            if(el.type.startsWith("button_") && !el.disabled && el.key==obj.key)
             {
-                el.disabled=true;
-            } 
+                allDone=false;
+            }
         });
+        if(allDone)
+        {
+            drawable.forEach(el => { 
+                if(el.type=="obstacle" && !el.disabled && el.key==obj.key)
+                {
+                    el.disabled=true;
+                } 
+            });
+        }
     }
 }
 function holdButton(obj)
