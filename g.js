@@ -379,18 +379,23 @@ function clickedStart(obj)
     startTime=Date.now();
 }
 //check if mouse is inside obj
-function isSelected(obj)
+function isSelected(obj,tx,ty)
 {
+    if(tx==null)
+    {
+        tx=mousex;
+        ty=mousey;
+    }
     //circle-based
-    if(obj.radius>0 && distanceFrom(mousex,mousey,obj.x,obj.y) < obj.radius)
+    if(obj.radius>0 && distanceFrom(tx,ty,obj.x,obj.y) < obj.radius)
         return true;
     else if(obj.radius>0)
         return false;
     //rectangle-based
-    if(mousex < obj.x) return false;
-    if(mousex > obj.x + obj.width) return false;
-    if(mousey < obj.y) return false;
-    if(mousey > obj.y + obj.height) return false;
+    if(tx < obj.x) return false;
+    if(tx > obj.x + obj.width) return false;
+    if(ty < obj.y) return false;
+    if(ty > obj.y + obj.height) return false;
     return true;
 }
 //draw a single object
@@ -657,6 +662,7 @@ function run()
                 if(el.trail && el.trail.length>0)
                 {
                     drawTrail(el.trail,tick);
+                    handleGhost(el.trail,tick);
                 }
                                  
             });
@@ -665,9 +671,32 @@ function run()
     oldmousex=mousex;
     oldmousey=mousey;
 }
+function handleGhost(obj,limit)
+{
+    if(obj.length<1) return;
+    if(obj[0].length<4) return;
+    for(var i=0;i<obj.length;i++)
+    {
+        var tick=obj[i].split("_")[3];
+        if(tick>limit) break;
+    }
+    var x=obj[i].split("_")[0];
+    var y=obj[i].split("_")[1];
+    var drag=obj[i].split("_")[2];
+    drawable.forEach(el => { 
+        if(el.type.startsWith("button_"))
+        {
+            if(isSelected(el,x,y))
+            {
+
+            }
+        }
+    });
+}
 function drawTrail(obj,limit=9999999)
 {
-    if(obj.length<4) return;
+    if(obj.length<1) return;
+    if(obj[0].length<4) return;
     ctx.strokeStyle = "#010";
     var oldx=obj[0].split("_")[0];
     var oldy=obj[0].split("_")[1];
@@ -715,6 +744,7 @@ function checkCollisions()
             else if(lineRect(oldmousex,oldmousey,mousex,mousey,el.x,el.y,el.width,el.height))
                 res=true;
         } 
+        //TODO rendi generici i button, e demanda alle funzioni la specializzazione
         //buttons
         if(el.type=="button_click" && !el.disabled)
         {
