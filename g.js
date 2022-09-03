@@ -22,7 +22,7 @@ var activeCountry=start;
 var startTime;
 
 //TODO DEBUG
-level=3;
+level=4;
 //TODO DEBUG
 
 //setup
@@ -42,10 +42,25 @@ setInterval(run, 33);
 //win the level
 function win()
 {
-    document.title="You won!";
     playMode=false;
-    level++;
-    setup();
+    if(activeCountry)
+    {
+        activeCountry.won=true;
+        var levelCompleted=true
+        startCountries.forEach(el => { if(!el.won) levelCompleted=false; });
+        if(levelCompleted)
+        {
+            levelUp();
+        }
+        else
+        {
+            activeCountry.trail=[...trail];
+            activeCountry=null;
+            fail();
+        }
+    }
+    else
+        levelUp();
 }
 function fail()
 {
@@ -55,8 +70,20 @@ function fail()
     if(activeCountry)
     {
         activeCountry.trail=[...trail];
+        activeCountry.won=false;
     }        
     setup();
+}
+function levelUp()
+{
+    setTimeout(function() {        
+        oldmousex=-100;
+        oldmousey=-100;
+        trail=[];
+        startCountries=[];
+        level++;
+        setup();
+    },33);
 }
 //setup all the objects
 function setup()
@@ -304,6 +331,24 @@ function setup()
     }
     else if(level==4)
     {
+        if(startCountries.length==0)
+        {
+            var tmp=new Object();
+            tmp.label="EUROPE";
+            tmp.age=80;
+            tmp.type="country";
+            startCountries.push(tmp);
+
+            var tmp=new Object();
+            tmp.label="AFRICA";
+            tmp.age=51;
+            tmp.type="country";
+            startCountries.push(tmp);
+        }
+        else
+        {
+            startCountries.forEach(el => { el.disabled=false; });
+        }
         var tmp=new Object();
         tmp.type="obstacle";
         tmp.x=1000;
@@ -436,7 +481,10 @@ function draw(obj)
         }
         
         ctx.fillRect(obj.x,obj.y,obj.width,obj.height);
-        ctx.fillStyle="#FFF";
+        if(obj.won)
+            ctx.fillStyle="#9F9";
+        else
+            ctx.fillStyle="#FFF";
         ctx.fillRect(obj.x+2,obj.y+2,obj.width-4,obj.height-4);
         ctx.fillStyle="#000";
         ctx.fillText(obj.label,obj.x+5,obj.y+16);
@@ -680,15 +728,28 @@ function handleGhost(obj,limit)
         var tick=obj[i].split("_")[3];
         if(tick>limit) break;
     }
+    if(i>=obj.length) return;
     var x=obj[i].split("_")[0];
     var y=obj[i].split("_")[1];
-    var drag=obj[i].split("_")[2];
+    var drag=(obj[i].split("_")[2])=="true"?true:false;
     drawable.forEach(el => { 
         if(el.type.startsWith("button_"))
         {
             if(isSelected(el,x,y))
             {
-
+                hoverButton(el);
+                if(drag)
+                {
+                    clickButton(el);
+                }
+                else
+                {
+                    unclickButton(el);
+                }
+            }
+            else
+            {
+                releaseButton(el);
             }
         }
     });
@@ -703,8 +764,8 @@ function drawTrail(obj,limit=9999999)
     for(var i=0;i<obj.length;i++)
     {
         var x=obj[i].split("_")[0];
+        if(x<0) continue;
         var y=obj[i].split("_")[1];
-        var drag=obj[i].split("_")[2];
         var tick=obj[i].split("_")[3];
         if(tick>limit) break;
         ctx.beginPath();
@@ -744,113 +805,122 @@ function checkCollisions()
             else if(lineRect(oldmousex,oldmousey,mousex,mousey,el.x,el.y,el.width,el.height))
                 res=true;
         } 
-        //TODO rendi generici i button, e demanda alle funzioni la specializzazione
-        //buttons
-        if(el.type=="button_click" && !el.disabled)
-        {
-            if(isSelected(el))
-            {
-                if(!el.clicked && dragging)
-                {
-                    clickButton(el);
-                }
-                else if(el.clicked && !dragging)
-                {
-                    el.clicked=false;
-                }
-            }
-            else el.clicked=false;
-        }
-        if(el.type=="button_hover" && !el.disabled)
+        //handle buttons
+        if(el.type.startsWith("button") && !el.disabled)
         {
             if(isSelected(el))
             {
                 hoverButton(el);
+                if(dragging)
+                {
+                    clickButton(el);
+                }
+                else
+                {
+                    unclickButton(el);
+                }
             }
-        }
-        if(el.type=="button_hold" && !el.disabled)
-        {
-            if(!el.holding && isSelected(el))
-            {
-                holdButton(el);
-            }
-            else if(el.holding && !isSelected(el))
+            else
             {
                 releaseButton(el);
-            }                
+            }
         }
     });
     return res;
 }
 function clickButton(obj)
 {
-    obj.missingClick--;
-    obj.clicked=true;
-    if(obj.missingClick<=0)
+    if(obj.type=="button_click" && !obj.clicked)
     {
-        obj.disabled=true;
-        var allDone=true;
-        drawable.forEach(el => { 
-            if(el.type.startsWith("button_") && !el.disabled && el.key==obj.key)
-            {
-                allDone=false;
-            }
-        });
-        if(allDone)
+        obj.missingClick--;
+        obj.clicked=true;
+        if(obj.missingClick<=0)
         {
+            obj.disabled=true;
+            var allDone=true;
             drawable.forEach(el => { 
-                if(el.type=="obstacle" && !el.disabled && el.key==obj.key)
+                if(el.type.startsWith("button_") && !el.disabled && el.key==obj.key)
                 {
-                    el.disabled=true;
-                } 
+                    allDone=false;
+                }
             });
+            if(allDone)
+            {
+                drawable.forEach(el => { 
+                    if(el.type=="obstacle" && !el.disabled && el.key==obj.key)
+                    {
+                        el.disabled=true;
+                    } 
+                });
+            }
         }
+    }    
+}
+function unclickButton(obj)
+{
+    if(obj.type=="button_click" && obj.clicked)
+    {
+        obj.clicked=false;
     }
 }
 function hoverButton(obj)
 {
-    obj.missingTime-=agingSpeed;
-    if(obj.missingTime<=0)
+    if(obj.type=="button_hold")
     {
-        obj.disabled=true;
-        var allDone=true;
-        drawable.forEach(el => { 
-            if(el.type.startsWith("button_") && !el.disabled && el.key==obj.key)
-            {
-                allDone=false;
-            }
-        });
-        if(allDone)
+        holdButton(obj);
+    }
+    if(obj.type=="button_hover")
+    {
+        obj.missingTime-=agingSpeed;
+        if(obj.missingTime<=0)
         {
+            obj.disabled=true;
+            var allDone=true;
             drawable.forEach(el => { 
-                if(el.type=="obstacle" && !el.disabled && el.key==obj.key)
+                if(el.type.startsWith("button_") && !el.disabled && el.key==obj.key)
                 {
-                    el.disabled=true;
-                } 
+                    allDone=false;
+                }
             });
+            if(allDone)
+            {
+                drawable.forEach(el => { 
+                    if(el.type=="obstacle" && !el.disabled && el.key==obj.key)
+                    {
+                        el.disabled=true;
+                    } 
+                });
+            }
         }
     }
 }
 function holdButton(obj)
 {
-    obj.holding=true;
-    drawable.forEach(el => { 
-        if(el.type=="obstacle" && !el.disabled && el.key==obj.key)
-        {
-            el.disabled=true;
-        } 
-    });
+    if(obj.type=="button_hold" && !obj.holding)
+    {
+        obj.holding=true;
+        drawable.forEach(el => { 
+            if(el.type=="obstacle" && !el.disabled && el.key==obj.key)
+            {
+                el.disabled=true;
+            } 
+        });
+    }    
 }
 function releaseButton(obj)
 {
-    obj.holding=false;
-    drawable.forEach(el => { 
-        if(el.type=="obstacle" && el.disabled && el.key==obj.key)
-        {
-            el.disabled=false;
-        } 
-    });
+    if(obj.type=="button_hold" && obj.holding)
+    {
+        obj.holding=false;
+        drawable.forEach(el => { 
+            if(el.type=="obstacle" && el.disabled && el.key==obj.key)
+            {
+                el.disabled=false;
+            } 
+        });
+    }
 }
+
 //check if a line intersect a rectangle
 function lineRect(x1,y1,x2,y2,rx,ry,rw,rh)
 {
