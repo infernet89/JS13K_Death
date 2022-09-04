@@ -22,7 +22,7 @@ var activeCountry=start;
 var startTime;
 
 //TODO DEBUG
-level=4;
+level=1;
 //TODO DEBUG
 
 //setup
@@ -116,6 +116,13 @@ function setup()
     if(level==1)
     {
         var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=100;
+        tmp.y=400;
+        tmp.text="The global average \nage of death \nis around 72 years"
+        drawable.push(tmp);
+
+        var tmp=new Object();
         tmp.type="obstacle"
         tmp.x=2;
         tmp.y=250;
@@ -139,6 +146,20 @@ function setup()
     }
     else if(level==2)
     {
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=140;
+        tmp.y=380;
+        tmp.text="In that short time, everybody will try to reach his goal"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=180;
+        tmp.y=550;
+        tmp.text="Overcoming all obstacles that are in between!"
+        drawable.push(tmp);
+
         var tmp=new Object();
         tmp.type="obstacle"
         tmp.x=2;
@@ -187,6 +208,20 @@ function setup()
     }
     else if(level==3)
     {
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=300;
+        tmp.y=150;
+        tmp.text="Sometimes, reaching your goal can be really hard"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=300;
+        tmp.y=450;
+        tmp.text="Luckily, you can get help in the process"
+        drawable.push(tmp);
+
         if(startCountries.length==0)
         {
             var tmp=new Object();
@@ -331,6 +366,20 @@ function setup()
     }
     else if(level==4)
     {
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=300;
+        tmp.y=150;
+        tmp.text="With some help, you can reach goals\nthat you thought were impossible!"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=300;
+        tmp.y=450;
+        tmp.text="But remember to help other as well!"
+        drawable.push(tmp);
+
         if(startCountries.length==0)
         {
             var tmp=new Object();
@@ -391,6 +440,203 @@ function setup()
         tmp.color2="#000";
         tmp.key="blue";
         drawable.push(tmp);
+
+    }
+    else if(level==5)
+    {
+        if(startCountries.length==0)
+        {
+            var tmp=new Object();
+            tmp.label="USA";
+            tmp.age=79;
+            tmp.type="country";
+            startCountries.push(tmp);
+
+            var tmp=new Object();
+            tmp.label="AFRICA";
+            tmp.age=51;
+            tmp.type="country";
+            startCountries.push(tmp);
+
+            var tmp=new Object();
+            tmp.label="ICELAND";
+            tmp.age=82;
+            tmp.type="country";
+            startCountries.push(tmp);
+        }
+        else
+        {
+            startCountries.forEach(el => { el.disabled=false; });
+        }
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=200;
+        tmp.y=200;
+        tmp.width=50;
+        tmp.height=400;
+        tmp.color1="#e63300"
+        tmp.color2="#770000"
+        tmp.color3="#e63300"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=600;
+        tmp.y=200;
+        tmp.width=50;
+        tmp.height=400;
+        tmp.color1="#e63300"
+        tmp.color2="#770000"
+        tmp.color3="#e63300"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=800;
+        tmp.y=200;
+        tmp.width=50;
+        tmp.height=400;
+        tmp.color1="#e63300"
+        tmp.color2="#770000"
+        tmp.color3="#e63300"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=200;
+        tmp.y=2;
+        tmp.width=50;
+        tmp.height=200;
+        tmp.color1="#088300"
+        tmp.color2="#37ff2b"
+        tmp.color3="#088300"
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=600;
+        tmp.y=150;
+        tmp.width=250;
+        tmp.height=50;
+        tmp.color1="#088300"
+        tmp.color2="#37ff2b"
+        tmp.color3="#088300"
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_click"
+        tmp.x=100;
+        tmp.y=250;
+        tmp.radius=30;
+        tmp.color1="#37ff2b"
+        tmp.color2="#088300"
+        tmp.key="green";
+        tmp.missingClick=6;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hover"
+        tmp.x=725;
+        tmp.y=250;
+        tmp.radius=30;
+        tmp.color1="#37ff2b"
+        tmp.color2="#088300"
+        tmp.key="green";
+        tmp.missingTime=330;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=2;
+        tmp.y=300;
+        tmp.width=198;
+        tmp.height=50;
+        tmp.color1="#a18700"
+        tmp.color2="#ffdc2b"
+        tmp.color3="#a18700"
+        tmp.key="yellow";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=650;
+        tmp.y=300;
+        tmp.width=150;
+        tmp.height=50;
+        tmp.color1="#a18700"
+        tmp.color2="#ffdc2b"
+        tmp.color3="#a18700"
+        tmp.key="yellow";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hold"
+        tmp.x=425;
+        tmp.y=325;
+        tmp.radius=30;
+        tmp.color1="#ffdc2b"
+        tmp.color2="#a18700"
+        tmp.key="yellow";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=2;
+        tmp.y=550;
+        tmp.width=198;
+        tmp.height=50;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000883";
+        tmp.color3="#0e1cff";
+        tmp.key="blue";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=650;
+        tmp.y=550;
+        tmp.width=150;
+        tmp.height=50;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000883";
+        tmp.color3="#0e1cff";
+        tmp.key="blue";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hold";
+        tmp.x=425;
+        tmp.y=575;
+        tmp.radius=30;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000";
+        tmp.key="blue";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=2;
+        tmp.y=425;
+        tmp.width=198;
+        tmp.height=50;
+        tmp.color1="#0db3a9";
+        tmp.color2="#0a5550";
+        tmp.color3="#0db3a9";
+        tmp.key="cyan";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hold";
+        tmp.x=725;
+        tmp.y=450;
+        tmp.radius=30;
+        tmp.color1="#0db3a9";
+        tmp.color2="#000";
+        tmp.key="cyan";
+        drawable.push(tmp);
     }
 
     //calculate countries properties
@@ -409,6 +655,7 @@ function clickedStart(obj)
     playMode=true;
     start.disabled=true;
     end.disabled=false;
+    drawable.forEach(el => { if(el.type=="commentary") el.disabled=true; });
     canvas.style.cursor = "default";
     if(!obj || obj==start)
     {
@@ -451,6 +698,14 @@ function draw(obj)
     ctx.fillStyle=obj.color;
     if(obj.disabled)
         ctx.globalAlpha=0.2;
+    if(obj.type=="commentary")
+    {
+        ctx.fillStyle = "#AAA";
+        ctx.font = "25px sans-serif";
+        var text=obj.text.split("\n");
+        for(i=0;i<text.length;i++)
+            ctx.fillText(text[i],obj.x,obj.y+i*25);
+    }
     if(obj.type=="cursor")
     {
         ctx.strokeStyle = "#000";
@@ -701,7 +956,7 @@ function run()
         {
             fail();
         }
-        else
+        else if (playMode)
         {
             var tick=Date.now()-startTime;
             trail.push(mousex+"_"+mousey+"_"+dragging+"_"+tick);
@@ -711,8 +966,7 @@ function run()
                 {
                     drawTrail(el.trail,tick);
                     handleGhost(el.trail,tick);
-                }
-                                 
+                }                                 
             });
         }
     }
@@ -732,6 +986,31 @@ function handleGhost(obj,limit)
     var x=obj[i].split("_")[0];
     var y=obj[i].split("_")[1];
     var drag=(obj[i].split("_")[2])=="true"?true:false;
+    obj.x=x;
+    obj.y=y;
+    obj.drag=drag;
+    //prima i release
+    drawable.forEach(el => { 
+        //facciamo la release SOLO se non c'è il player sopra
+        if(el.type.startsWith("button_") && el.holding && !isSelected(el))
+        {
+            //check if someone else is here
+            var toRelease=true;
+            startCountries.forEach(c => { 
+                if(c.trail && c.trail.x>0 && !isSelected(el,c.trail.x,c.trail.y))
+                {
+                    toRelease=false;
+                }                                 
+            });
+            if(toRelease)
+            {
+                releaseButton(el);
+                unclickButton(el);
+            }
+                
+        }
+    });
+    //poi controlliamo se fare hover
     drawable.forEach(el => { 
         if(el.type.startsWith("button_"))
         {
@@ -746,10 +1025,6 @@ function handleGhost(obj,limit)
                 {
                     unclickButton(el);
                 }
-            }
-            else
-            {
-                releaseButton(el);
             }
         }
     });
@@ -978,6 +1253,7 @@ function mossoMouse(evt)
     var rect = canvas.getBoundingClientRect();
     mousex=(evt.clientX-rect.left)/(rect.right-rect.left)*canvasW;
     mousey=(evt.clientY-rect.top)/(rect.bottom-rect.top)*canvasH;
+    document.title=mousex+"_"+mousey;//TODO DEBUG
 }
 function rilasciatoMouse(evt)
 {
