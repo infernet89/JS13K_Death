@@ -22,7 +22,7 @@ var activeCountry=start;
 var startTime;
 
 //TODO DEBUG
-level=1;
+level=5;
 //TODO DEBUG
 
 //setup
@@ -440,9 +440,120 @@ function setup()
         tmp.color2="#000";
         tmp.key="blue";
         drawable.push(tmp);
-
     }
     else if(level==5)
+    {
+        if(startCountries.length==0)
+        {
+            var tmp=new Object();
+            tmp.label="USA";
+            tmp.age=79;
+            tmp.type="country";
+            startCountries.push(tmp);
+
+            var tmp=new Object();
+            tmp.label="EUROPE";
+            tmp.age=80;
+            tmp.type="country";
+            startCountries.push(tmp);
+
+            var tmp=new Object();
+            tmp.label="ICELAND";
+            tmp.age=82;
+            tmp.type="country";
+            startCountries.push(tmp);
+        }
+        else
+        {
+            startCountries.forEach(el => { el.disabled=false; });
+        }
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=2;
+        tmp.y=500;
+        tmp.width=800-2;
+        tmp.height=50;
+        tmp.color1="#a18700"
+        tmp.color2="#ffdc2b"
+        tmp.color3="#a18700"
+        tmp.key="yellow";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=750;
+        tmp.y=2;
+        tmp.width=50;
+        tmp.height=550-2;
+        tmp.color1="#a18700"
+        tmp.color2="#ffdc2b"
+        tmp.color3="#a18700"
+        tmp.key="yellow";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hover"
+        tmp.x=950;
+        tmp.y=650;
+        tmp.radius=30;
+        tmp.color1="#ffdc2b"
+        tmp.color2="#a18700"
+        tmp.key="yellow";
+        tmp.missingTime=999;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=2;
+        tmp.y=300;
+        tmp.width=400-2;
+        tmp.height=50;
+        tmp.color1="#088300"
+        tmp.color2="#37ff2b"
+        tmp.color3="#088300"
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=350;
+        tmp.y=2;
+        tmp.width=50;
+        tmp.height=350-2;
+        tmp.color1="#088300"
+        tmp.color2="#37ff2b"
+        tmp.color3="#088300"
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_click"
+        tmp.x=550;
+        tmp.y=400;
+        tmp.radius=30;
+        tmp.color1="#37ff2b"
+        tmp.color2="#088300"
+        tmp.key="green";
+        tmp.missingClick=30;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=70;
+        tmp.y=450;
+        tmp.text="A lifetime can seem like a lot of time.."
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=70;
+        tmp.y=650;
+        tmp.text="But if you not focus,\nit will pass without achieving anything."
+        drawable.push(tmp);
+    }
+
+    else if(level==7)
     {
         if(startCountries.length==0)
         {
