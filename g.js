@@ -22,7 +22,7 @@ var activeCountry=start;
 var startTime;
 
 //TODO DEBUG
-level=5;
+level=1;
 //TODO DEBUG
 
 //setup
@@ -205,8 +205,85 @@ function setup()
         tmp.key="green";
         tmp.missingClick=10;
         drawable.push(tmp);
-    }
+    }    
     else if(level==3)
+    {
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=300;
+        tmp.y=150;
+        tmp.text="With some help, you can reach goals\nthat you thought were impossible!"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=300;
+        tmp.y=450;
+        tmp.text="But remember to help other as well!"
+        drawable.push(tmp);
+
+        if(startCountries.length==0)
+        {
+            var tmp=new Object();
+            tmp.label="EUROPE";
+            tmp.age=80;
+            tmp.type="country";
+            startCountries.push(tmp);
+
+            var tmp=new Object();
+            tmp.label="AFRICA";
+            tmp.age=51;
+            tmp.type="country";
+            startCountries.push(tmp);
+        }
+        else
+        {
+            startCountries.forEach(el => { el.disabled=false; });
+        }
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=1000;
+        tmp.y=2;
+        tmp.width=50;
+        tmp.height=600;
+        tmp.color1="#e63300";
+        tmp.color2="#770000";
+        tmp.color3="#e63300";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=2;
+        tmp.y=250;
+        tmp.width=1000-2;
+        tmp.height=50;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000883";
+        tmp.color3="#0e1cff";
+        tmp.key="blue";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hold";
+        tmp.x=canvasW-100;
+        tmp.y=100;
+        tmp.radius=30;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000";
+        tmp.key="blue";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hold";
+        tmp.x=850;
+        tmp.y=100;
+        tmp.radius=30;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000";
+        tmp.key="blue";
+        drawable.push(tmp);
+    }
+    else if(level==4)
     {
         var tmp=new Object();
         tmp.type="commentary";
@@ -362,83 +439,6 @@ function setup()
         tmp.color2="#088300"
         tmp.key="green";
         tmp.missingClick=5;
-        drawable.push(tmp);
-    }
-    else if(level==4)
-    {
-        var tmp=new Object();
-        tmp.type="commentary";
-        tmp.x=300;
-        tmp.y=150;
-        tmp.text="With some help, you can reach goals\nthat you thought were impossible!"
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="commentary";
-        tmp.x=300;
-        tmp.y=450;
-        tmp.text="But remember to help other as well!"
-        drawable.push(tmp);
-
-        if(startCountries.length==0)
-        {
-            var tmp=new Object();
-            tmp.label="EUROPE";
-            tmp.age=80;
-            tmp.type="country";
-            startCountries.push(tmp);
-
-            var tmp=new Object();
-            tmp.label="AFRICA";
-            tmp.age=51;
-            tmp.type="country";
-            startCountries.push(tmp);
-        }
-        else
-        {
-            startCountries.forEach(el => { el.disabled=false; });
-        }
-        var tmp=new Object();
-        tmp.type="obstacle";
-        tmp.x=1000;
-        tmp.y=2;
-        tmp.width=50;
-        tmp.height=600;
-        tmp.color1="#e63300";
-        tmp.color2="#770000";
-        tmp.color3="#e63300";
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="obstacle";
-        tmp.x=2;
-        tmp.y=250;
-        tmp.width=1000-2;
-        tmp.height=50;
-        tmp.color1="#0e1cff";
-        tmp.color2="#000883";
-        tmp.color3="#0e1cff";
-        tmp.key="blue";
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="button_hold";
-        tmp.x=canvasW-100;
-        tmp.y=100;
-        tmp.radius=30;
-        tmp.color1="#0e1cff";
-        tmp.color2="#000";
-        tmp.key="blue";
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="button_hold";
-        tmp.x=850;
-        tmp.y=100;
-        tmp.radius=30;
-        tmp.color1="#0e1cff";
-        tmp.color2="#000";
-        tmp.key="blue";
         drawable.push(tmp);
     }
     else if(level==5)
@@ -1013,6 +1013,10 @@ function run()
     ctx.fillRect(0,canvasH-1,canvasW,1);
     ctx.fillRect(0,0,1,canvasH);
     ctx.fillRect(canvasW-1,0,1,canvasH);
+
+    //current level
+    ctx.font = "10px sans-serif";
+    ctx.fillText("Level "+level,5,10);
 
     drawable.forEach(el => draw(el));
     drawable.forEach(el => { el.selected=isSelected(el); });
