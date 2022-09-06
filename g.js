@@ -74,7 +74,6 @@ function win()
 }
 function fail()
 {
-    console.log("called fail??");
     if(activeCountry)
     {
         activeCountry.trail=[...trail];
