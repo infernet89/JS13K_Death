@@ -14,6 +14,7 @@ var drawable=[];
 var start;
 var startCountries=[];
 var end;
+var reset;
 var playMode=false;
 var timeLeft=0;
 var trail=[];
@@ -22,7 +23,7 @@ var activeCountry=start;
 var startTime;
 
 //TODO DEBUG
-level=1;
+level=6;
 //TODO DEBUG
 
 //setup
@@ -46,33 +47,53 @@ function win()
     if(activeCountry)
     {
         activeCountry.won=true;
-        var levelCompleted=true
-        startCountries.forEach(el => { if(!el.won) levelCompleted=false; });
-        if(levelCompleted)
+        activeCountry.x=mousex;
+        activeCountry.y=mousey;
+    }
+    setTimeout(function(){
+        if(activeCountry)
         {
-            levelUp();
+            activeCountry.won=true;
+            var levelCompleted=true
+            startCountries.forEach(el => { if(!el.won) levelCompleted=false; });
+            if(levelCompleted)
+            {
+                levelUp();
+            }
+            else
+            {
+                activeCountry.trail=[...trail];
+                activeCountry=null;
+                setup();
+                reset.disabled=false;
+            }
         }
         else
-        {
-            activeCountry.trail=[...trail];
-            activeCountry=null;
-            fail();
-        }
-    }
-    else
-        levelUp();
+            levelUp();
+    },2000);
 }
 function fail()
 {
-    playMode=false;
-    start.disabled=false;
-    end.disabled=true;
+    console.log("called fail??");
     if(activeCountry)
     {
         activeCountry.trail=[...trail];
         activeCountry.won=false;
-    }        
-    setup();
+    }
+    playMode=false;
+    timeLeft=-1;
+    canvas.style.cursor="none";
+    var tmp=new Object();
+    tmp.type="tomb";
+    tmp.x=mousex;
+    tmp.y=mousey;
+    drawable.push(tmp);  
+    setTimeout(function(){
+        canvas.style.cursor="default";
+        setup();
+        reset.disabled=false;
+    },2000);      
+    
 }
 function levelUp()
 {
@@ -91,6 +112,8 @@ function setup()
     activeCountry=null;
     drawable=[];
     trail=[];
+    playMode=false;
+    timeLeft=0;
 
     start=new Object()
     start.type="start";
@@ -112,6 +135,16 @@ function setup()
     end.color="#FFF";
     end.disabled=true;
     drawable.push(end);
+
+    reset=new Object()
+    reset.type="reset";
+    reset.x=1220;
+    reset.y=2;
+    reset.width=58;
+    reset.height=20;
+    reset.color="#FFF";
+    reset.disabled=true;
+    drawable.push(reset);
 
     if(level==1)
     {
@@ -761,6 +794,16 @@ function setup()
         drawable.push(el);
     }
 }
+function clickedReset(obj)
+{
+    setTimeout(function() {        
+        oldmousex=-100;
+        oldmousey=-100;
+        trail=[];
+        startCountries=[];
+        setup();
+    },33);
+}
 function clickedStart(obj)
 {
     playMode=true;
@@ -805,7 +848,6 @@ function isSelected(obj,tx,ty)
 function draw(obj)
 {
     ctx.save();
-
     ctx.fillStyle=obj.color;
     if(obj.disabled)
         ctx.globalAlpha=0.2;
@@ -824,6 +866,19 @@ function draw(obj)
         var cursor=new Path2D("M"+obj.x+" "+obj.y+" l 0 17 l 4 -2 l 2 5 l 2 0 l -2 -5 l 4 -2 Z");
         ctx.stroke(cursor);
         ctx.fill(cursor);        
+    }
+    if(obj.type=="tomb")
+    {
+        ctx.fillStyle = "#EEE";
+        ctx.font = "30px sans-serif";
+        ctx.fillText("☠",obj.x-15,obj.y+15);     
+    }
+    if(obj.type=="reset")
+    {
+        ctx.fillStyle = "#FFF";
+        ctx.font = "15px sans-serif";
+        ctx.fillText("Reset ♻",obj.x,obj.y+15);
+        
     }
     if(obj.type=="start")
     {
@@ -1048,7 +1103,19 @@ function run()
                 }
             }            
         }
-        else canvas.style.cursor = "default";
+        //reset
+        else if(reset.selected && !reset.disabled)
+        {
+            canvas.style.cursor = "pointer";
+            if(dragging)
+            {
+                clickedReset();
+            }
+        }
+        else if(timeLeft!=-1)
+        {
+            canvas.style.cursor = "default";
+        }
     }
     //we are playing
     else
@@ -1067,7 +1134,7 @@ function run()
         ctx.font = "10px sans-serif";
         ctx.fillText((timeLeft/10)+" years",mousex,mousey);
         timeLeft-=agingSpeed;
-        if(timeLeft <=0 || checkCollisions())
+        if(playMode && (timeLeft <=0 || checkCollisions()))
         {
             fail();
         }
@@ -1085,6 +1152,9 @@ function run()
             });
         }
     }
+
+
+    //log trail
     oldmousex=mousex;
     oldmousey=mousey;
 }
