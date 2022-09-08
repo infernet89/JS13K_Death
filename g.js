@@ -21,6 +21,7 @@ var trail=[];
 var agingSpeed=3;
 var activeCountry=start;
 var startTime;
+var cooldown=false;
 
 //TODO DEBUG
 level=3;
@@ -44,6 +45,7 @@ setInterval(run, 33);
 function win()
 {
     playMode=false;
+    cooldown=true;
     var tmp=new Object();
     tmp.type="big_message";
     tmp.color="#090";
@@ -89,6 +91,7 @@ function fail()
         activeCountry.won=false;
     }
     playMode=false;
+    cooldown=true;
     timeLeft=-1;
     canvas.style.cursor="none";
 
@@ -130,6 +133,7 @@ function setup()
     drawable=[];
     trail=[];
     playMode=false;
+    cooldown=false;
     timeLeft=0;
 
     start=new Object()
@@ -285,6 +289,7 @@ function setup()
             tmp.label="AFRICA";
             tmp.age=51;
             tmp.type="country";
+            tmp.color='#643906';
             startCountries.push(tmp);
         }
         else
@@ -335,6 +340,120 @@ function setup()
         drawable.push(tmp);
     }
     else if(level==4)
+    {
+        if(startCountries.length==0)
+        {
+            var tmp=new Object();
+            tmp.label="USA";
+            tmp.age=79;
+            tmp.type="country";
+            tmp.color='#fc1e49';
+            startCountries.push(tmp);
+
+            var tmp=new Object();
+            tmp.label="EUROPE";
+            tmp.age=80;
+            tmp.type="country";
+            tmp.color='#0777d6';
+            startCountries.push(tmp);
+
+            var tmp=new Object();
+            tmp.label="ICELAND";
+            tmp.age=82;
+            tmp.type="country";
+            tmp.color='#1ffff5';
+            startCountries.push(tmp);
+        }
+        else
+        {
+            startCountries.forEach(el => { el.disabled=false; });
+        }
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=2;
+        tmp.y=500;
+        tmp.width=800-2;
+        tmp.height=50;
+        tmp.color1="#a18700"
+        tmp.color2="#ffdc2b"
+        tmp.color3="#a18700"
+        tmp.key="yellow";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=750;
+        tmp.y=2;
+        tmp.width=50;
+        tmp.height=550-2;
+        tmp.color1="#a18700"
+        tmp.color2="#ffdc2b"
+        tmp.color3="#a18700"
+        tmp.key="yellow";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hover"
+        tmp.x=950;
+        tmp.y=650;
+        tmp.radius=30;
+        tmp.color1="#ffdc2b"
+        tmp.color2="#a18700"
+        tmp.key="yellow";
+        tmp.missingTime=999;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=2;
+        tmp.y=300;
+        tmp.width=400-2;
+        tmp.height=50;
+        tmp.color1="#088300"
+        tmp.color2="#37ff2b"
+        tmp.color3="#088300"
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=350;
+        tmp.y=2;
+        tmp.width=50;
+        tmp.height=350-2;
+        tmp.color1="#088300"
+        tmp.color2="#37ff2b"
+        tmp.color3="#088300"
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_click"
+        tmp.x=550;
+        tmp.y=400;
+        tmp.radius=30;
+        tmp.color1="#37ff2b"
+        tmp.color2="#088300"
+        tmp.key="green";
+        tmp.missingClick=30;
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=70;
+        tmp.y=450;
+        tmp.text="A lifetime can seem like a lot of time.."
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=70;
+        tmp.y=650;
+        tmp.text="But if you not focus,\nit will pass without achieving anything."
+        drawable.push(tmp);
+    }
+    else if(level==5)
     {
         var tmp=new Object();
         tmp.type="commentary";
@@ -493,120 +612,7 @@ function setup()
         tmp.key="green";
         tmp.missingClick=5;
         drawable.push(tmp);
-    }
-    else if(level==5)
-    {
-        if(startCountries.length==0)
-        {
-            var tmp=new Object();
-            tmp.label="USA";
-            tmp.age=79;
-            tmp.type="country";
-            tmp.color='#fc1e49';
-            startCountries.push(tmp);
-
-            var tmp=new Object();
-            tmp.label="EUROPE";
-            tmp.age=80;
-            tmp.type="country";
-            tmp.color='#0777d6';
-            startCountries.push(tmp);
-
-            var tmp=new Object();
-            tmp.label="ICELAND";
-            tmp.age=82;
-            tmp.type="country";
-            startCountries.push(tmp);
-        }
-        else
-        {
-            startCountries.forEach(el => { el.disabled=false; });
-        }
-
-        var tmp=new Object();
-        tmp.type="obstacle"
-        tmp.x=2;
-        tmp.y=500;
-        tmp.width=800-2;
-        tmp.height=50;
-        tmp.color1="#a18700"
-        tmp.color2="#ffdc2b"
-        tmp.color3="#a18700"
-        tmp.key="yellow";
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="obstacle"
-        tmp.x=750;
-        tmp.y=2;
-        tmp.width=50;
-        tmp.height=550-2;
-        tmp.color1="#a18700"
-        tmp.color2="#ffdc2b"
-        tmp.color3="#a18700"
-        tmp.key="yellow";
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="button_hover"
-        tmp.x=950;
-        tmp.y=650;
-        tmp.radius=30;
-        tmp.color1="#ffdc2b"
-        tmp.color2="#a18700"
-        tmp.key="yellow";
-        tmp.missingTime=999;
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="obstacle"
-        tmp.x=2;
-        tmp.y=300;
-        tmp.width=400-2;
-        tmp.height=50;
-        tmp.color1="#088300"
-        tmp.color2="#37ff2b"
-        tmp.color3="#088300"
-        tmp.key="green";
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="obstacle"
-        tmp.x=350;
-        tmp.y=2;
-        tmp.width=50;
-        tmp.height=350-2;
-        tmp.color1="#088300"
-        tmp.color2="#37ff2b"
-        tmp.color3="#088300"
-        tmp.key="green";
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="button_click"
-        tmp.x=550;
-        tmp.y=400;
-        tmp.radius=30;
-        tmp.color1="#37ff2b"
-        tmp.color2="#088300"
-        tmp.key="green";
-        tmp.missingClick=30;
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="commentary";
-        tmp.x=70;
-        tmp.y=450;
-        tmp.text="A lifetime can seem like a lot of time.."
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="commentary";
-        tmp.x=70;
-        tmp.y=650;
-        tmp.text="But if you not focus,\nit will pass without achieving anything."
-        drawable.push(tmp);
-    }
+    }    
     else if(level==6)
     {
         if(startCountries.length==0)
@@ -629,6 +635,7 @@ function setup()
             tmp.label="CHINA";
             tmp.age=75;
             tmp.type="country";
+            tmp.color='#ffcd1f';
             startCountries.push(tmp);
         }
         else
@@ -943,12 +950,14 @@ function setup()
             tmp.label="AFRICA";
             tmp.age=51;
             tmp.type="country";
+            tmp.color='#643906';
             startCountries.push(tmp);
 
             var tmp=new Object();
             tmp.label="ICELAND";
             tmp.age=82;
             tmp.type="country";
+            tmp.color='#1ffff5';
             startCountries.push(tmp);
         }
         else
@@ -1315,7 +1324,8 @@ function draw(obj)
         {
             ctx.fillStyle="#000";
             ctx.font = "18px sans-serif";
-            ctx.fillText(obj.missingClick,obj.x-5,obj.y+5);
+            ctx.textAlign="center";
+            ctx.fillText(obj.missingClick,obj.x,obj.y+5);
         }        
     }
     if(obj.type=="button_hover")
@@ -1361,7 +1371,8 @@ function draw(obj)
         {
             ctx.fillStyle="#000";
             ctx.font = "18px sans-serif";
-            ctx.fillText((obj.missingTime/10).toFixed(1),obj.x-15,obj.y+5);
+            ctx.textAlign="center";
+            ctx.fillText((obj.missingTime/10).toFixed(1),obj.x,obj.y+5);
         }        
     }
     if(obj.type=="button_hold")
@@ -1475,6 +1486,8 @@ function run()
     
     drawable.forEach(el => draw(el));
     drawable.forEach(el => { el.selected=isSelected(el); });
+
+    if(cooldown) return;
 
     if(!playMode)
     {
