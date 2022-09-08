@@ -24,7 +24,7 @@ var startTime;
 var cooldown=false;
 
 //TODO DEBUG
-level=3;
+level=1;
 //TODO DEBUG
 
 //setup
