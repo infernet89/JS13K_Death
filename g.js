@@ -23,7 +23,7 @@ var activeCountry=start;
 var startTime;
 
 //TODO DEBUG
-level=1;
+level=3;
 //TODO DEBUG
 
 //setup
@@ -44,12 +44,21 @@ setInterval(run, 33);
 function win()
 {
     playMode=false;
+    var tmp=new Object();
+    tmp.type="big_message";
+    tmp.color="#090";
+    tmp.x=canvasW/2;
+    tmp.y=400;
+    tmp.text="You got it!";
     if(activeCountry)
     {
         activeCountry.won=true;
         activeCountry.x=mousex;
         activeCountry.y=mousey;
+        var nDone=startCountries.filter(c => c.won).length;
+        tmp.text+="\n"+nDone+"/"+startCountries.length;
     }
+    drawable.push(tmp);
     setTimeout(function(){
         if(activeCountry)
         {
@@ -82,7 +91,16 @@ function fail()
     playMode=false;
     timeLeft=-1;
     canvas.style.cursor="none";
+
     var tmp=new Object();
+    tmp.type="big_message";
+    tmp.color="#ab0a08";
+    tmp.x=canvasW/2;
+    tmp.y=400;
+    tmp.text="YOU DIED";
+    drawable.push(tmp); 
+
+    tmp=new Object();
     tmp.type="tomb";
     tmp.x=mousex;
     tmp.y=mousey;
@@ -260,6 +278,7 @@ function setup()
             tmp.label="EUROPE";
             tmp.age=80;
             tmp.type="country";
+            tmp.color='#0777d6';
             startCountries.push(tmp);
 
             var tmp=new Object();
@@ -337,12 +356,14 @@ function setup()
             tmp.label="USA";
             tmp.age=79;
             tmp.type="country";
+            tmp.color='#fc1e49';
             startCountries.push(tmp);
 
             var tmp=new Object();
             tmp.label="EUROPE";
             tmp.age=80;
             tmp.type="country";
+            tmp.color='#0777d6';
             startCountries.push(tmp);
         }
         else
@@ -481,12 +502,14 @@ function setup()
             tmp.label="USA";
             tmp.age=79;
             tmp.type="country";
+            tmp.color='#fc1e49';
             startCountries.push(tmp);
 
             var tmp=new Object();
             tmp.label="EUROPE";
             tmp.age=80;
             tmp.type="country";
+            tmp.color='#0777d6';
             startCountries.push(tmp);
 
             var tmp=new Object();
@@ -592,12 +615,14 @@ function setup()
             tmp.label="USA";
             tmp.age=79;
             tmp.type="country";
+            tmp.color='#fc1e49';
             startCountries.push(tmp);
 
             var tmp=new Object();
             tmp.label="EUROPE";
             tmp.age=80;
             tmp.type="country";
+            tmp.color='#0777d6';
             startCountries.push(tmp);
 
             var tmp=new Object();
@@ -911,6 +936,7 @@ function setup()
             tmp.label="USA";
             tmp.age=79;
             tmp.type="country";
+            tmp.color='#fc1e49';
             startCountries.push(tmp);
 
             var tmp=new Object();
@@ -1168,6 +1194,19 @@ function draw(obj)
     ctx.fillStyle=obj.color;
     if(obj.disabled)
         ctx.globalAlpha=0.2;
+    if(obj.type=="big_message")
+    {
+        ctx.globalAlpha=0.7;
+        ctx.fillStyle="#000";
+        ctx.fillRect(0,0,canvasW,canvasH);
+        ctx.globalAlpha=1;
+        ctx.fillStyle=obj.color;
+        ctx.font = "90px sans-serif";
+        ctx.textAlign="center";
+        var text=obj.text.split("\n");
+        for(i=0;i<text.length;i++)
+            ctx.fillText(text[i],obj.x,obj.y+i*100);
+    }
     if(obj.type=="commentary")
     {
         ctx.fillStyle = "#AAA";
@@ -1179,7 +1218,14 @@ function draw(obj)
     if(obj.type=="cursor")
     {
         ctx.strokeStyle = "#000";
-        ctx.fillStyle = "#FFF";
+        if(obj.color)
+        {
+            ctx.fillStyle = obj.color;
+        }
+        else
+        {
+            ctx.fillStyle = "#FFF";
+        }
         var cursor=new Path2D("M"+obj.x+" "+obj.y+" l 0 17 l 4 -2 l 2 5 l 2 0 l -2 -5 l 4 -2 Z");
         ctx.stroke(cursor);
         ctx.fill(cursor);        
@@ -1194,8 +1240,7 @@ function draw(obj)
     {
         ctx.fillStyle = "#FFF";
         ctx.font = "15px sans-serif";
-        ctx.fillText("Reset ♻",obj.x,obj.y+15);
-        
+        ctx.fillText("Reset ♻",obj.x,obj.y+15);        
     }
     if(obj.type=="start")
     {
@@ -1427,11 +1472,15 @@ function run()
     ctx.fillText("Level "+level,5,10);
 
     drawLinks();
+    
     drawable.forEach(el => draw(el));
     drawable.forEach(el => { el.selected=isSelected(el); });
 
     if(!playMode)
     {
+        //draw older trails
+        startCountries.filter(el => el.trail && el.trail.length>0).forEach( el => { drawTrail(el.trail);});
+
         if(start.selected)
         {
             if(startCountries.length>0)
@@ -1500,7 +1549,7 @@ function run()
             startCountries.forEach(el => { 
                 if(el.trail && el.trail.length>0)
                 {
-                    drawTrail(el.trail,tick);
+                    drawTrail(el.trail,tick,el.color);
                     handleGhost(el.trail,tick);
                 }                                 
             });
@@ -1568,7 +1617,7 @@ function handleGhost(obj,limit)
         }
     });
 }
-function drawTrail(obj,limit=9999999)
+function drawTrail(obj,limit=9999999,color=null)
 {
     if(obj.length<1) return;
     if(obj[0].length<4) return;
@@ -1596,6 +1645,7 @@ function drawTrail(obj,limit=9999999)
         tmp.type="cursor";
         tmp.x=oldx;
         tmp.y=oldy;
+        tmp.color=color;
         draw(tmp);
     }
 }
