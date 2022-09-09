@@ -22,6 +22,7 @@ var agingSpeed=3;
 var activeCountry=start;
 var startTime;
 var cooldown=false;
+var allTrails=[];
 
 //TODO DEBUG
 level=1;
@@ -46,6 +47,7 @@ function win()
 {
     playMode=false;
     cooldown=true;
+    canvas.style.cursor = "default";
     var tmp=new Object();
     tmp.type="big_message";
     tmp.color="#090";
@@ -129,9 +131,11 @@ function levelUp()
 //setup all the objects
 function setup()
 {
-    activeCountry=null;
     drawable=[];
+    if(trail.length>0)
+        allTrails.push([...trail]); //save all trails, for the big ending
     trail=[];
+    activeCountry=null;
     playMode=false;
     cooldown=false;
     timeLeft=0;
@@ -170,13 +174,6 @@ function setup()
     if(level==1)
     {
         var tmp=new Object();
-        tmp.type="commentary";
-        tmp.x=100;
-        tmp.y=400;
-        tmp.text="The global average \nage of death \nis around 72 years"
-        drawable.push(tmp);
-
-        var tmp=new Object();
         tmp.type="obstacle"
         tmp.x=2;
         tmp.y=250;
@@ -200,18 +197,6 @@ function setup()
     }
     else if(level==2)
     {
-        var tmp=new Object();
-        tmp.type="commentary";
-        tmp.x=140;
-        tmp.y=380;
-        tmp.text="In that short time, everybody will try to reach his goal"
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="commentary";
-        tmp.x=180;
-        tmp.y=550;
-        tmp.text="Overcoming all obstacles that are in between!"
         drawable.push(tmp);
 
         var tmp=new Object();
@@ -262,20 +247,6 @@ function setup()
     }    
     else if(level==3)
     {
-        var tmp=new Object();
-        tmp.type="commentary";
-        tmp.x=300;
-        tmp.y=150;
-        tmp.text="With some help, you can reach goals\nthat you thought were impossible!"
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="commentary";
-        tmp.x=300;
-        tmp.y=450;
-        tmp.text="But remember to help other as well!"
-        drawable.push(tmp);
-
         if(startCountries.length==0)
         {
             var tmp=new Object();
@@ -438,37 +409,9 @@ function setup()
         tmp.key="green";
         tmp.missingClick=30;
         drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="commentary";
-        tmp.x=70;
-        tmp.y=450;
-        tmp.text="A lifetime can seem like a lot of time.."
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="commentary";
-        tmp.x=70;
-        tmp.y=650;
-        tmp.text="But if you not focus,\nit will pass without achieving anything."
-        drawable.push(tmp);
     }
     else if(level==5)
     {
-        var tmp=new Object();
-        tmp.type="commentary";
-        tmp.x=300;
-        tmp.y=150;
-        tmp.text="Sometimes, reaching your goal can be really hard"
-        drawable.push(tmp);
-
-        var tmp=new Object();
-        tmp.type="commentary";
-        tmp.x=300;
-        tmp.y=450;
-        tmp.text="Luckily, you can get help in the process"
-        drawable.push(tmp);
-
         if(startCountries.length==0)
         {
             var tmp=new Object();
@@ -932,9 +875,7 @@ function setup()
         tmp.color2="#a18700"
         tmp.key="yellow";
         drawable.push(tmp);
-
     }
-
     else if(level==7)
     {
         if(startCountries.length==0)
@@ -1135,6 +1076,88 @@ function setup()
         drawable.push(tmp);
     }
 
+    //commentary
+    if(level==1)
+    {
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=100;
+        tmp.y=400;
+        tmp.text="The global average \nage of death \nis around 72 years"
+        drawable.push(tmp);
+    }
+    else if(level==2)
+    {
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=140;
+        tmp.y=380;
+        tmp.text="In that short time, everybody will try to reach his goal"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=180;
+        tmp.y=550;
+        tmp.text="Overcoming all obstacles that are in between!"
+    }
+    else if(level==3)
+    {
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=300;
+        tmp.y=150;
+        tmp.text="With some help, you can reach goals\nthat you thought were impossible!"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=300;
+        tmp.y=450;
+        tmp.text="But remember to help other as well!"
+        drawable.push(tmp);        
+    }
+    else if(level==4)
+    {
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=70;
+        tmp.y=450;
+        tmp.text="A lifetime can seem like a lot of time.."
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=70;
+        tmp.y=650;
+        tmp.text="But if you not focus,\nit will pass without achieving anything."
+        drawable.push(tmp);
+    }
+    else if(level==5)
+    {
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=300;
+        tmp.y=150;
+        tmp.text="Sometimes, reaching your goal can be really hard"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="commentary";
+        tmp.x=300;
+        tmp.y=450;
+        tmp.text="Luckily, you can get help in the process"
+        drawable.push(tmp);
+    }
+    else if(level==6)
+    {
+        //TODO commentary
+    }
+    else if(level==7)
+    {
+        //TODO commentary
+    }
+
     //calculate countries properties
     for(i=0;i<startCountries.length;i++)
     {
@@ -1145,6 +1168,8 @@ function setup()
         el.height=24;
         drawable.push(el);
     }
+    //disable all buttons (in order to reenable that on start)
+    drawable.forEach(el => { if(el.type.startsWith("button")) el.disabled=true; });
 }
 function clickedReset(obj)
 {
@@ -1162,6 +1187,7 @@ function clickedStart(obj)
     start.disabled=true;
     end.disabled=false;
     drawable.forEach(el => { if(el.type=="commentary") el.disabled=true; });
+    drawable.forEach(el => { if(el.type.startsWith("button")) el.disabled=false; });
     canvas.style.cursor = "default";
     if(!obj || obj==start)
     {
@@ -1216,7 +1242,7 @@ function draw(obj)
         for(i=0;i<text.length;i++)
             ctx.fillText(text[i],obj.x,obj.y+i*100);
     }
-    if(obj.type=="commentary")
+    if(obj.type=="commentary")//TODO ripristiniamo i Commentary alla fine, in modo da avere una "storia" coerente
     {
         ctx.fillStyle = "#AAA";
         ctx.font = "25px sans-serif";
@@ -1482,8 +1508,7 @@ function run()
     ctx.font = "10px sans-serif";
     ctx.fillText("Level "+level,5,10);
 
-    drawLinks();
-    
+    drawLinks();    
     drawable.forEach(el => draw(el));
     drawable.forEach(el => { el.selected=isSelected(el); });
 
