@@ -23,9 +23,10 @@ var activeCountry=start;
 var startTime;
 var cooldown=false;
 var allTrails=[];
+var readyToPlay=false;
 
 //TODO DEBUG
-level=1;
+level=0;
 //TODO DEBUG
 
 //setup
@@ -124,8 +125,7 @@ function fail()
             level=99;
             canvas.style.cursor="none";
             setup();
-            level=99;
-        },4000);
+        },6000);
     }
     else
     {
@@ -134,8 +134,7 @@ function fail()
             setup();
             reset.disabled=false;
         },2000);   
-    }
-       
+    }       
 }
 function levelUp()
 {
@@ -191,7 +190,11 @@ function setup()
     reset.disabled=true;
     drawable.push(reset);
 
-    if(level==1)
+    if(level==0)
+    {
+        start.disabled=true;
+    }
+    else if(level==1)
     {
         var tmp=new Object();
         tmp.type="obstacle"
@@ -1387,7 +1390,7 @@ function setup()
         drawable.push(tmp);
     }
     //almost over
-    else if(level=89)
+    else if(level==89)
     {
         for(i=drawable.length-1;i>=0;i--)
             if(drawable[i]==end || drawable[i]==reset)
@@ -1563,7 +1566,7 @@ function draw(obj)
         for(i=0;i<text.length;i++)
             ctx.fillText(text[i],obj.x,obj.y+i*100);
     }
-    if(obj.type=="commentary")//TODO ripristiniamo i Commentary alla fine, in modo da avere una "storia" coerente
+    if(obj.type=="commentary")
     {
         ctx.fillStyle = "#AAA";
         ctx.font = "25px sans-serif";
@@ -1828,9 +1831,93 @@ function run()
     ctx.fillRect(0,0,1,canvasH);
     ctx.fillRect(canvasW-1,0,1,canvasH);
 
-    //current level
-    ctx.font = "10px sans-serif";
-    ctx.fillText("Level "+level,5,10);
+    if(level > 0 && level < 89)
+    {
+        //current level
+        ctx.font = "10px sans-serif";
+        ctx.fillText("Level "+level,5,10);    
+    }
+    //MENU
+    else if(level != 89)
+    {
+        ctx.fillStyle="#FFF";
+        ctx.font = "12px sans-serif";
+        ctx.fillText("Made for JS13KGames - By Infernet89 ",3,canvasH-5);   
+
+        const gradient = ctx.createLinearGradient(0,0,0,200);
+        gradient.addColorStop(0, "#EEE");
+        gradient.addColorStop(1, "#222");
+        ctx.fillStyle = gradient;
+        ctx.font = "120px sans-serif";
+        ctx.fillText("The Value of Time 2",100,140);
+
+        if(!readyToPlay)
+        {
+            ctx.fillStyle="#FFF";
+            ctx.font = "50px sans-serif";
+            ctx.fillText("PLAY",1120,770);  
+        }
+
+        if(!readyToPlay && start.selected)
+        {
+            canvas.style.cursor="pointer";
+            if(dragging)
+            {
+                readyToPlay=true;
+                canvas.style.cursor="default";
+                for(i=drawable.length-1;i>=0;i--)
+                    if(drawable[i]==end || drawable[i]==start)
+                    {
+                        drawable.splice(i,1);
+                        i++;
+                    }
+            }
+        }
+        else if(timeLeft > agingSpeed)
+            canvas.style.cursor="default";
+
+        //move cursor
+        drawable.filter(el => el.type=="cursor").forEach(el => {
+            el.dx*=0.99;
+            el.dy+=1;
+            el.x+=el.dx; 
+            el.y+=el.dy; 
+        });
+        timeLeft-=agingSpeed;
+        if(timeLeft > agingSpeed)
+        {
+            //aging cursors
+            ctx.fillStyle="#FFF";
+            ctx.font = "10px sans-serif";
+            ctx.fillText((timeLeft/10)+" years",mousex,mousey);
+        }       
+        if(timeLeft <= agingSpeed && timeLeft > 0)
+        {
+            var tmp=new Object();
+            tmp.type="cursor";
+            tmp.x=mousex;
+            tmp.y=mousey;
+            tmp.color="#CCC";
+            tmp.dx=mousex-oldmousex;
+            tmp.dy=mousey-oldmousey;
+            drawable.push(tmp);//ok, on the long run is a memory leak. But we'll clean memory on start so NVM.
+            canvas.style.cursor="none";
+        }
+        else if(timeLeft < -30 && !readyToPlay)
+        {
+            canvas.style.cursor="default";
+            if(!readyToPlay)
+                timeLeft=726;
+        }
+        else if(readyToPlay && timeLeft < -100)
+        {
+            level++;
+            setup();
+            return;
+        }
+
+            
+    }   
 
     drawLinks();    
     drawable.forEach(el => draw(el));
@@ -1838,7 +1925,7 @@ function run()
 
     if(cooldown) return;
 
-    if(!playMode)
+    if(!playMode && level> 0)
     {
         //draw older trails
         startCountries.filter(el => el.trail && el.trail.length>0).forEach( el => { drawTrail(el.trail);});
@@ -1883,7 +1970,7 @@ function run()
         }
     }
     //we are playing
-    else
+    else if(level > 0)
     {
         if(end.selected)
         {
