@@ -109,13 +109,33 @@ function fail()
     tmp.type="tomb";
     tmp.x=mousex;
     tmp.y=mousey;
-    drawable.push(tmp);  
-    setTimeout(function(){
-        canvas.style.cursor="default";
-        setup();
-        reset.disabled=false;
-    },2000);      
-    
+    drawable.push(tmp); 
+    //ending
+    if(level==89)
+    {
+        tmp=new Object();
+        tmp.type="commentary";
+        tmp.color="#ab0a08";
+        tmp.x=480;
+        tmp.y=500;
+        tmp.text="and then, there will be nothing.";
+        drawable.push(tmp);
+        setTimeout(function(){  
+            level=99;
+            canvas.style.cursor="none";
+            setup();
+            level=99;
+        },4000);
+    }
+    else
+    {
+        setTimeout(function(){  
+            canvas.style.cursor="default";
+            setup();
+            reset.disabled=false;
+        },2000);   
+    }
+       
 }
 function levelUp()
 {
@@ -197,8 +217,6 @@ function setup()
     }
     else if(level==2)
     {
-        drawable.push(tmp);
-
         var tmp=new Object();
         tmp.type="obstacle"
         tmp.x=2;
@@ -1075,6 +1093,309 @@ function setup()
         tmp.key="cyan";
         drawable.push(tmp);
     }
+    else if(level==8)
+    {
+        if(startCountries.length==0)
+        {
+            var tmp=new Object();
+            tmp.label="SHANGRI-LA";
+            tmp.age=400;
+            tmp.type="country";
+            tmp.color='#fc1e49';
+            startCountries.push(tmp);
+
+            var tmp=new Object();
+            tmp.label="ATLANTIS";
+            tmp.age=300;
+            tmp.type="country";
+            tmp.color='#1ffff5';
+            startCountries.push(tmp);
+        }
+        else
+        {
+            startCountries.forEach(el => { el.disabled=false; });
+        }
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=2;
+        tmp.y=200;
+        tmp.width=1000;
+        tmp.height=50;
+        tmp.color1="#e63300"
+        tmp.color2="#770000"
+        tmp.color3="#e63300"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=200;
+        tmp.y=600;
+        tmp.width=1080-2;
+        tmp.height=50;
+        tmp.color1="#e63300"
+        tmp.color2="#770000"
+        tmp.color3="#e63300"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=200;
+        tmp.y=350;
+        tmp.width=50;
+        tmp.height=300;
+        tmp.color1="#e63300"
+        tmp.color2="#770000"
+        tmp.color3="#e63300"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=450;
+        tmp.y=250;
+        tmp.width=50;
+        tmp.height=275;
+        tmp.color1="#770000"
+        tmp.color2="#e63300"
+        tmp.color3="#770000"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=750;
+        tmp.y=350;
+        tmp.width=50;
+        tmp.height=250;
+        tmp.color1="#770000"
+        tmp.color2="#e63300"
+        tmp.color3="#770000"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle"
+        tmp.x=1000;
+        tmp.y=200;
+        tmp.width=50;
+        tmp.height=325;
+        tmp.color1="#e63300"
+        tmp.color2="#770000"
+        tmp.color3="#e63300"
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=2;
+        tmp.y=600;
+        tmp.width=200-2;
+        tmp.height=50;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000883";
+        tmp.color3="#0e1cff";
+        tmp.key="blue";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=2;
+        tmp.y=475;
+        tmp.width=200-2;
+        tmp.height=50;
+        tmp.color1="#088300"
+        tmp.color2="#37ff2b"
+        tmp.color3="#088300"
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=2;
+        tmp.y=350;
+        tmp.width=200-2;
+        tmp.height=50;
+        tmp.color1="#a18700"
+        tmp.color2="#ffdc2b"
+        tmp.color3="#a18700"
+        tmp.key="yellow";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=250;
+        tmp.y=350;
+        tmp.width=200;
+        tmp.height=50;
+        tmp.color1="#088300"
+        tmp.color2="#37ff2b"
+        tmp.color3="#088300"
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=250;
+        tmp.y=475;
+        tmp.width=200;
+        tmp.height=50;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000883";
+        tmp.color3="#0e1cff";
+        tmp.key="blue";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=500;
+        tmp.y=350;
+        tmp.width=250;
+        tmp.height=50;
+        tmp.color1="#a18700"
+        tmp.color2="#ffdc2b"
+        tmp.color3="#a18700"
+        tmp.key="yellow";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=500;
+        tmp.y=475;
+        tmp.width=250;
+        tmp.height=50;
+        tmp.color1="#088300"
+        tmp.color2="#37ff2b"
+        tmp.color3="#088300"
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=800;
+        tmp.y=350;
+        tmp.width=200;
+        tmp.height=50;
+        tmp.color1="#088300"
+        tmp.color2="#37ff2b"
+        tmp.color3="#088300"
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=800;
+        tmp.y=475;
+        tmp.width=200;
+        tmp.height=50;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000883";
+        tmp.color3="#0e1cff";
+        tmp.key="blue";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=1050;
+        tmp.y=200;
+        tmp.width=227;
+        tmp.height=50;
+        tmp.color1="#088300"
+        tmp.color2="#37ff2b"
+        tmp.color3="#088300"
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=1050;
+        tmp.y=350;
+        tmp.width=227;
+        tmp.height=50;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000883";
+        tmp.color3="#0e1cff";
+        tmp.key="blue";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="obstacle";
+        tmp.x=1050;
+        tmp.y=475;
+        tmp.width=227;
+        tmp.height=50;
+        tmp.color1="#a18700"
+        tmp.color2="#ffdc2b"
+        tmp.color3="#a18700"
+        tmp.key="yellow";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hold";
+        tmp.x=475;
+        tmp.y=725;
+        tmp.radius=30;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000";
+        tmp.key="blue";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hold";
+        tmp.x=625;
+        tmp.y=725;
+        tmp.radius=30;
+        tmp.color1="#37ff2b";
+        tmp.color2="#000";
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hold"
+        tmp.x=775;
+        tmp.y=725;
+        tmp.radius=30;
+        tmp.color1="#ffdc2b"
+        tmp.color2="#000"
+        tmp.key="yellow";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hold";
+        tmp.x=475;
+        tmp.y=125;
+        tmp.radius=30;
+        tmp.color1="#0e1cff";
+        tmp.color2="#000";
+        tmp.key="blue";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hold";
+        tmp.x=625;
+        tmp.y=125;
+        tmp.radius=30;
+        tmp.color1="#37ff2b";
+        tmp.color2="#000";
+        tmp.key="green";
+        drawable.push(tmp);
+
+        var tmp=new Object();
+        tmp.type="button_hold"
+        tmp.x=775;
+        tmp.y=125;
+        tmp.radius=30;
+        tmp.color1="#ffdc2b"
+        tmp.color2="#000"
+        tmp.key="yellow";
+        drawable.push(tmp);
+    }
+    //almost over
+    else if(level=89)
+    {
+        for(i=drawable.length-1;i>=0;i--)
+            if(drawable[i]==end || drawable[i]==reset)
+            {
+                drawable.splice(i,1);
+                i++;
+            }
+    }
 
     //commentary
     if(level==1)
@@ -1497,6 +1818,9 @@ function run()
     ctx.clearRect(0, 0, canvasW, canvasH);
     ctx.fillStyle="#000";
     ctx.fillRect(0,0,canvasW,canvasH);
+    //real end
+    if(level==99)
+        return;
     //border
     ctx.fillStyle="#FFF";
     ctx.fillRect(0,0,canvasW,1);
@@ -1591,6 +1915,11 @@ function run()
                     handleGhost(el.trail,tick);
                 }                                 
             });
+        }
+        //ending
+        if(level==89)
+        {
+            allTrails.forEach(el =>drawTrail(el,tick));
         }
     }
 
